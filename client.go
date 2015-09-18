@@ -1,6 +1,7 @@
 package kinesis
 
 import (
+	"net"
 	"net/http"
 	"time"
 )
@@ -21,7 +22,21 @@ type Client struct {
 // This function assumes the Auth object has been sanely initialized. If you
 // wish to infer auth credentials from the environment, refer to NewAuth
 func NewClient(auth Auth) *Client {
-	return &Client{auth: auth, client: http.DefaultClient}
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		Dial: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: 10 * time.Second,
+		DisableKeepAlives:   true,
+	}
+
+	client := &http.Client{
+		Transport: transport,
+	}
+
+	return &Client{auth: auth, client: client}
 }
 
 // NewClientWithHTTPClient creates a client with a non-default http client
