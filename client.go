@@ -25,15 +25,15 @@ func NewClient(auth Auth) *Client {
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		Dial: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
+			Timeout: 5 * time.Second,
 		}).Dial,
-		TLSHandshakeTimeout: 10 * time.Second,
+		TLSHandshakeTimeout: 5 * time.Second,
 		DisableKeepAlives:   true,
 	}
 
 	client := &http.Client{
 		Transport: transport,
+		Timeout:   500 * time.Millisecond,
 	}
 
 	return &Client{auth: auth, client: client}
