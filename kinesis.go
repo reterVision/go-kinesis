@@ -118,7 +118,7 @@ type Error struct {
 }
 
 // Return error message from error object
-func (err *Error) Error() string {
+func (err Error) Error() string {
 	if err.Code == "" {
 		return err.Message
 	}
